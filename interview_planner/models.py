@@ -29,7 +29,7 @@ class Interview(models.Model):
 
     def save(self, *args, **kwargs):
         if self.interviewer.id == self.interviewee_id:
-            raise ValidationError(_('Interviews should be scheduled_interview_objects between 2 different persons'))
+            raise ValidationError(_('Interviews should be scheduled between 2 different persons'))
 
         if self.start > self.end:
             raise ValidationError(_('Start time cannot be greater than end time'))
@@ -43,7 +43,7 @@ class Interview(models.Model):
 
         for interview in scheduled_interview_objects:
             if self.check_clash(interview):
-                raise ValidationError(_('scheduled_interview_objects interviews are clashing.'))
+                raise ValidationError(_('Interviews are clashing.'))
 
         super().save(*args, **kwargs)  # call the actual save method
 
