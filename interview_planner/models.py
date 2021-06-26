@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.db.models import Q
+from datetime import timedelta
+from django.utils import timezone
+
 
 
 class Interview(models.Model):
@@ -12,8 +15,8 @@ class Interview(models.Model):
     interviewee = models.ForeignKey(
         User, related_name='interviewee', on_delete=models.CASCADE
     )
-    start = models.DateTimeField()
-    end = models.DateTimeField()
+    start = models.DateTimeField(blank=True, null=True)
+    end = models.DateTimeField(blank=True, null=True)
     resume1 = models.FileField(
         blank=True, null=True
     )
@@ -31,6 +34,10 @@ class Interview(models.Model):
         if self.interviewer.id == self.interviewee_id:
             raise ValidationError(_('Interviews should be scheduled between 2 different persons'))
 
+        if self.start is None or self.end is None:
+            self.start = timezone.now()
+            self.end = timezone.now() + timedelta(hours=3)
+            
         if self.start > self.end:
             raise ValidationError(_('Start time cannot be greater than end time'))
         
